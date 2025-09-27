@@ -25,7 +25,7 @@ function ActiveCollaborators() {
     const others = useOthers();
     return (
         <div className="flex -space-x-2">
-            {others.map(({ connectionId, info }) => (
+            {others.map(({ connectionId, info }: { connectionId: string; info: any }) => (
                 info?.avatar && (
                     <Image key={connectionId} src={info.avatar} alt={info.name ?? 'Anonymous'} width={32} height={32} className="rounded-full border-2 border-white" title={info.name ?? 'Anonymous'} />
                 )
@@ -45,6 +45,7 @@ function CreateNewContent(props:PROPS) {
     const selectedTemplate:TEMPLATE|undefined=Templates?.find((item)=>item.slug==props.params['template-slug']);
     const [loading,setLoading]=useState(false);
     const [aiOutput,setAiOutput]=useState<string>('');
+    const [initialContent,setInitialContent]=useState<string>('');
     const [showForm,setShowForm]=useState<boolean>(true);
     const {user}=useUser();
     const router=useRouter();
@@ -80,6 +81,7 @@ function CreateNewContent(props:PROPS) {
             if (data.error) throw new Error(data.error);
             
             setAiOutput(data.text);
+            setInitialContent(data.text);
             await SaveInDb(JSON.stringify(formData),selectedTemplate?.slug,data.text)
             setShowForm(false);
         } catch (error) {
@@ -111,6 +113,7 @@ function CreateNewContent(props:PROPS) {
             });
             if(res?.aiResponse){
                 setAiOutput(res.aiResponse);
+                setInitialContent(res.aiResponse);
                 setShowForm(false);
             } else {
                 setShowForm(true);
@@ -150,7 +153,7 @@ function CreateNewContent(props:PROPS) {
                 <div className='p-2'>
                     <CollaborativeEditor 
                         document={yDoc}
-                        initialContent={aiOutput}
+                        initialContent={initialContent}
                     />
                 </div>
             </div>

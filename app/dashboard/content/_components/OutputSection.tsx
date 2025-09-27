@@ -10,12 +10,14 @@ interface Props {
 }
 
 function OutputSection({ aiOutput, roomId }: Props) {
-  const hasSetInitialContent = useRef(false);
   const [document] = useState(() => new Y.Doc());
+  const [initialContent, setInitialContent] = useState('');
+  const hasSetInitialContent = useRef(false);
 
-  // Effect to handle setting initial content when AI output changes
+  // Set initial content only once when aiOutput is first available
   useEffect(() => {
     if (aiOutput && !hasSetInitialContent.current) {
+      setInitialContent(aiOutput);
       hasSetInitialContent.current = true;
     }
   }, [aiOutput]);
@@ -53,7 +55,7 @@ function OutputSection({ aiOutput, roomId }: Props) {
         <div className='px-5 pb-5'>
           <CollaborativeEditor 
             document={document}
-            initialContent={aiOutput}
+            initialContent={initialContent}
           />
         </div>
       </div>
